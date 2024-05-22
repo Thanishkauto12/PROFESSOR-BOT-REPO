@@ -196,7 +196,6 @@ async def start(client, message):
         caption=f_caption,
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="⚜️ Main Channel ⚜️", url="https://t.me/Adholokam_Cinema_Channel")]]),
         protect_content=True if pre == 'filep' else False,
-        caption=f_caption, protect_content=True if pre == 'filep' else False,
         )
 
 
