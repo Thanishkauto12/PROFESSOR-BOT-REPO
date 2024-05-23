@@ -110,6 +110,11 @@ async def next_page(bot, query):
         InlineKeyboardButton("📽️ 𝐎𝐓𝐓 𝐌𝐎𝐕𝐈𝐄𝐒 📽️", url=f"https://t.me/+DFXw1-2my71hNTc1"),
         InlineKeyboardButton("🖥️ 𝐎𝐓𝐓 𝐔𝐏𝐃𝐀𝐓𝐄𝐒 🖥️", url=f"https://t.me/+1Zm5sYJIUpwyZWFl")
     ])
+    btn.insert(0, [
+        InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
+        InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
+        InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
+    ])
     if 0 < offset <= 10:
         off_set = 0
     elif offset == 0:
@@ -234,6 +239,11 @@ async def auto_filter(client, msg, spoll=False):
     btn.insert(1, [
         InlineKeyboardButton("📽️ 𝐎𝐓𝐓 𝐌𝐎𝐕𝐈𝐄𝐒 📽️", url=f"https://t.me/+DFXw1-2my71hNTc1"),
         InlineKeyboardButton("🖥️ 𝐎𝐓𝐓 𝐔𝐏𝐃𝐀𝐓𝐄𝐒 🖥️", url=f"https://t.me/+1Zm5sYJIUpwyZWFl")
+    ])
+    btn.insert(0, [
+        InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
+        InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
+        InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
     ])
     if offset != "":
         key = f"{message.chat.id}-{message.id}"
