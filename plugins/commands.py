@@ -307,8 +307,6 @@ async def settings(client, message):
             InlineKeyboardButton(f"ꜱᴩᴇʟʟɪɴɢ ᴄʜᴇᴄᴋ : {'ᴏɴ' if settings['spell_check'] else 'ᴏꜰꜰ'}", f'setgs#spell_check#{settings["spell_check"]}#{str(grp_id)}')
             ],[
             InlineKeyboardButton(f"ᴡᴇʟᴄᴏᴍᴇ ᴍᴇꜱꜱᴀɢᴇ : {'ᴏɴ' if settings['welcome'] else 'ᴏꜰꜰ'}", f'setgs#welcome#{settings["welcome"]}#{str(grp_id)}')
-            ],[
-            InlineKeyboardButton(f"Aᴜᴛᴏ-Dᴇʟᴇᴛᴇ : {'on' if settings['auto_delete'] else 'ᴏꜰꜰ'}", f'setgs#auto_delete#{settings["auto_delete"]}#{str(grp_id)}')
         ]]
         await message.reply_text(
             text=f"<b>Cʜᴀɴɢᴇ Yᴏᴜʀ Sᴇᴛᴛɪɴɢꜱ Fᴏʀ {title} Aꜱ Yᴏᴜʀ Wɪꜱʜ ⚙</b>",
