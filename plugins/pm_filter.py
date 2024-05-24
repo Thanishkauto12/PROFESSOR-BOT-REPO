@@ -49,7 +49,6 @@ async def pm_next_page(bot, query):
         else:
             btn = [[InlineKeyboardButton(text=f"{file.file_name}", callback_data=f'pmfile#{file.file_id}'),
                     InlineKeyboardButton(text=f"{get_size(file.file_size)}", callback_data=f'pmfile#{file.file_id}')] for file in files ]
-
     btn.insert(0, [
         InlineKeyboardButton(f'🎬 {search} 🎬', 'rkbtn')
     ])
@@ -59,11 +58,6 @@ async def pm_next_page(bot, query):
     btn.insert(1, [
         InlineKeyboardButton("📽️ 𝐎𝐓𝐓 𝐌𝐎𝐕𝐈𝐄𝐒 📽️", url=f"https://t.me/+DFXw1-2my71hNTc1"),
         InlineKeyboardButton("🖥️ 𝐎𝐓𝐓 𝐔𝐏𝐃𝐀𝐓𝐄𝐒 🖥️", url=f"https://t.me/+1Zm5sYJIUpwyZWFl")
-    ])
-    btn.insert(0, [
-        InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-        InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-        InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
     ])
     if 0 < offset <= 10: off_set = 0
     elif offset == 0: off_set = None
@@ -147,11 +141,6 @@ async def pm_AutoFilter(client, msg, pmspoll=False):
     btn.insert(1, [
         InlineKeyboardButton("📽️ 𝐎𝐓𝐓 𝐌𝐎𝐕𝐈𝐄𝐒 📽️", url=f"https://t.me/+DFXw1-2my71hNTc1"),
         InlineKeyboardButton("🖥️ 𝐎𝐓𝐓 𝐔𝐏𝐃𝐀𝐓𝐄𝐒 🖥️", url=f"https://t.me/+1Zm5sYJIUpwyZWFl")
-    ])
-    btn.insert(0, [
-        InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-        InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-        InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
     ])
     if offset != "":
         key = f"{message.id}"
