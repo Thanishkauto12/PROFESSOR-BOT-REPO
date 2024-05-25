@@ -1,6 +1,6 @@
 import asyncio, re, ast, math, logging
 from pyrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
-import Script*
+from Script import*
 from utils import get_shortlink, admin_filter 
 import pyrogram
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, make_inactive
@@ -100,9 +100,9 @@ async def next_page(bot, query):
             btn = [[InlineKeyboardButton(text=f"{file.file_name}", callback_data=f'files#{nxreq}#{file.file_id}'),
                     InlineKeyboardButton(text=f"{get_size(file.file_size)}", callback_data=f'files#{nxreq}#{file.file_id}')] for file in files ]
     btn.insert(0, [
-        InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-        InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-        InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
+        InlineKeyboardButton(f'ɪɴꜰᴏ', 'REQINFO'),
+        InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'MINFO'),
+        InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'SINFO')
     ])
     btn.insert(0, [
         InlineKeyboardButton(f'🎬 {search} 🎬', 'rkbtn')
@@ -229,9 +229,9 @@ async def auto_filter(client, msg, spoll=False):
             btn = [[InlineKeyboardButton(text=f"{file.file_name}", callback_data=f'{pre}#{req}#{file.file_id}'),
                     InlineKeyboardButton(text=f"{get_size(file.file_size)}", callback_data=f'{pre}#{req}#{file.file_id}')] for file in files ]
     btn.insert(0, [
-        InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-        InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
-        InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
+        InlineKeyboardButton(f'ɪɴꜰᴏ', 'REQINFO'),
+        InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'MINFO'),
+        InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'SINFO')
     ])
     btn.insert(0, [
         InlineKeyboardButton(f'🎬 {search} 🎬', 'rkbtn')
