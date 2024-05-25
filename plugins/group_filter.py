@@ -101,7 +101,7 @@ async def next_page(bot, query):
                     InlineKeyboardButton(text=f"{get_size(file.file_size)}", callback_data=f'files#{nxreq}#{file.file_id}')] for file in files ]
     btn.insert(0, [
         InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-        InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
+        InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', MINFO),
         InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
     ])
     btn.insert(0, [
@@ -230,7 +230,7 @@ async def auto_filter(client, msg, spoll=False):
                     InlineKeyboardButton(text=f"{get_size(file.file_size)}", callback_data=f'{pre}#{req}#{file.file_id}')] for file in files ]
     btn.insert(0, [
         InlineKeyboardButton(f'ɪɴꜰᴏ', 'reqinfo'),
-        InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', 'minfo'),
+        InlineKeyboardButton(f'ᴍᴏᴠɪᴇ', MINFO),
         InlineKeyboardButton(f'ꜱᴇʀɪᴇꜱ', 'sinfo')
     ])
     btn.insert(0, [
