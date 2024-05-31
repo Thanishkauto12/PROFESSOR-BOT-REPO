@@ -1,4 +1,3 @@
-
 import logging
 from struct import pack
 import re
@@ -8,19 +7,14 @@ from pymongo.errors import DuplicateKeyError
 from umongo import Instance, Document, fields
 from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
-from info import FILE_DB_URL, FILE_DB_NAME, COLLECTION_NAME, MAX_RIST_BTNS, SECONDDB_URI, DATABASE_URL, DATABASE_NAME
-from utils import get_settings, save_group_settings
-from sample_info import tempDict
+from info import FILE_DB_URL, FILE_DB_NAME, COLLECTION_NAME, MAX_RIST_BTNS
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-#some basic variables needed
-saveMedia = None
 
-#primary db
-client = AsyncIOMotorClient(DATABASE_URL)
-db = client[DATABASE_NAME]
+client = AsyncIOMotorClient(FILE_DB_URL)
+db = client[FILE_DB_NAME]
 instance = Instance.from_db(db)
 
 @instance.register
@@ -34,46 +28,14 @@ class Media(Document):
     caption = fields.StrField(allow_none=True)
 
     class Meta:
-        indexes = ('$file_name', )
         collection_name = COLLECTION_NAME
 
-#secondary db
-client2 = AsyncIOMotorClient(SECONDDB_URI)
-db2 = client2[DATABASE_NAME]
-instance2 = Instance.from_db(db2)
 
-@instance2.register
-class Media2(Document):
-    file_id = fields.StrField(attribute='_id')
-    file_ref = fields.StrField(allow_none=True)
-    file_name = fields.StrField(required=True)
-    file_size = fields.IntField(required=True)
-    file_type = fields.StrField(allow_none=True)
-    mime_type = fields.StrField(allow_none=True)
-    caption = fields.StrField(allow_none=True)
-
-    class Meta:
-        indexes = ('$file_name', )
-        collection_name = COLLECTION_NAME
-
-async def choose_mediaDB():
-    """This Function chooses which database to use based on the value of indexDB key in the dict tempDict."""
-    global saveMedia
-    if tempDict['indexDB'] == DATABASE_URL:
-        logger.info("Using first db (Media)")
-        saveMedia = Media
-    else:
-        logger.info("Using second db (Media2)")
-        saveMedia = Media2
-        
 async def save_file(media):
     file_id, file_ref = unpack_new_file_id(media.file_id)
     file_name = re.sub(r"@\w+|(_|\-|\.|\+)", " ", str(media.file_name))
     try:
-        if await Media.count_documents({'file_id': file_id}, limit=1):
-            logger.warning(f'{getattr(media, "file_name", "NO_FILE")} is already saved in primary DB !')
-            return False, 0
-        file = saveMedia(
+        file = Media(
             file_id=file_id,
             file_ref=file_ref,
             file_name=file_name,
@@ -100,40 +62,30 @@ async def get_search_results(query, file_type=None, max_results=(MAX_RIST_BTNS),
     query = query.strip()
     if not query: raw_pattern = '.'
     elif ' ' not in query: raw_pattern = r'(\b|[\.\+\-_])' + query + r'(\b|[\.\+\-_])'
-    else: raw_pattern = query.replace(' ', r'.*[\s\.\+\-_()]')
+    else: raw_pattern = query.replace(' ', r'.*[\s\.\+\-_]')
     try: regex = re.compile(raw_pattern, flags=re.IGNORECASE)
     except: return [], '', 0
     filter = {'file_name': regex}
-    if file_type: 
-        filter['file_type'] = file_type
+    if file_type: filter['file_type'] = file_type
 
-    #verifies max_results is an even number or not
-    if max_results%2 != 0: #if max_results is an odd number, add 1 to make it an even number
-        logger.info(f"Since max_results is an odd number ({max_results}), bot will use {max_results+1} as max_results to make it even.")
-        max_results += 1
+    total_results = await Media.count_documents(filter)
+    next_offset = offset + max_results
+    if next_offset > total_results: next_offset = ''
 
     cursor = Media.find(filter)
-    cursor2 = Media2.find(filter)
     # Sort by recent
     cursor.sort('$natural', -1)
-    cursor2.sort('$natural', -1)
     # Slice files according to offset and max results
-    cursor2.skip(offset).limit(max_results)
+    cursor.skip(offset).limit(max_results)
     # Get list of files
-    files = ((await cursor2.to_list(length=(await Media2.count_documents(filter))))+(await cursor.to_list(length=(await Media.count_documents(filter)))))
+    files = await cursor.to_list(length=max_results)
+    return files, next_offset, total_results
 
-    #calculate total results
-    total_results = len(files)
-    
-    return files, total_results
 
 async def get_file_details(query):
     filter = {'file_id': query}
     cursor = Media.find(filter)
     filedetails = await cursor.to_list(length=1)
-    if not filedetails:
-        cursor2 = Media2.find(filter)
-        filedetails = await cursor2.to_list(length=1)
     return filedetails
 
 
