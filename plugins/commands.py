@@ -201,8 +201,7 @@ async def start(client, message):
         protect_content=True if pre == 'filep' else False,
         caption=f_caption, protect_content=True if pre == 'filep' else False,
         )
-
-
+    
 @Client.on_message(filters.command('channel') & filters.user(ADMINS))
 async def channel_info(bot, message):
     if isinstance(CHANNELS, (int, str)): channels = [CHANNELS]
