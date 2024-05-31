@@ -6,7 +6,7 @@ class Database:
     
     def __init__(self, database_name):
         #primary db 
-        self._client = motor.motor_asyncio.AsyncIOMotorClient(DATABASE_URI)
+        self._client = motor.motor_asyncio.AsyncIOMotorClient(DATABASE_URL)
         self.db = self._client[database_name]
         self.col = self.db.users
         self.grp = self.db.groups
@@ -67,8 +67,8 @@ class Database:
     
     async def add_user(self, id, name):
         user = self.new_user(id, name)
-        print(f"tempDict: {tempDict['indexDB']}\n\nDATABASE_URI: {DATABASE_URI}")
-        if tempDict['indexDB'] == DATABASE_URI:
+        print(f"tempDict: {tempDict['indexDB']}\n\nDATABASE_URI: {DATABASE_URL}")
+        if tempDict['indexDB'] == DATABASE_URL:
             await self.col.insert_one(user)
         else:
             await self.col2.insert_one(user)
@@ -147,8 +147,8 @@ class Database:
 
     async def add_chat(self, chat, title, username):
         chat = self.new_group(chat, title, username)
-        print(f"tempDict: {tempDict['indexDB']}\n\nDATABASE_URI: {DATABASE_URI}")
-        if tempDict['indexDB'] == DATABASE_URI:
+        print(f"tempDict: {tempDict['indexDB']}\n\nDATABASE_URI: {DATABASE_URL}")
+        if tempDict['indexDB'] == DATABASE_URL:
             await self.grp.insert_one(chat)
         else:
             await self.grp2.insert_one(chat)
