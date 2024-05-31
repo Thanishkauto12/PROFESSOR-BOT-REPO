@@ -8,7 +8,7 @@ from pymongo.errors import DuplicateKeyError
 from umongo import Instance, Document, fields
 from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
-from info import FILE_DB_URL, FILE_DB_NAME, COLLECTION_NAME, MAX_RIST_BTNS, SECONDDB_URI
+from info import FILE_DB_URL, FILE_DB_NAME, COLLECTION_NAME, MAX_RIST_BTNS, SECONDDB_URI, DATABASE_URL, DATABASE_NAME
 from utils import get_settings, save_group_settings
 from sample_info import tempDict
 
@@ -19,8 +19,8 @@ logger.setLevel(logging.INFO)
 saveMedia = None
 
 #primary db
-client = AsyncIOMotorClient(FILE_DB_URL)
-db = client[FILE_DB_NAME]
+client = AsyncIOMotorClient(DATABASE_URL)
+db = client[DATABASE_NAME]
 instance = Instance.from_db(db)
 
 @instance.register
@@ -59,7 +59,7 @@ class Media2(Document):
 async def choose_mediaDB():
     """This Function chooses which database to use based on the value of indexDB key in the dict tempDict."""
     global saveMedia
-    if tempDict['indexDB'] == DATABASE_URI:
+    if tempDict['indexDB'] == DATABASE_URL:
         logger.info("Using first db (Media)")
         saveMedia = Media
     else:
