@@ -1,4 +1,4 @@
-from info import DATABASE_URI
+from info import DATABASE_URL
 
 # Bot information
 SESSION = 'Media_search'
