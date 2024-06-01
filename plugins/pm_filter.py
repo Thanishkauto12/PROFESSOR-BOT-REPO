@@ -2,7 +2,7 @@ import asyncio, re, ast, math, logging, pyrogram
 from pyrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from Script import script
 from utils import get_shortlink 
-from info import AUTH_USERS, PM_IMDB, SINGLE_BUTTON, PROTECT_CONTENT, SPELL_CHECK_REPLY, IMDB_TEMPLATE, IMDB_DELET_TIME, PMFILTER, G_FILTER, SHORT_URL, SHORT_API, REQ_CHANNEL
+from info import AUTH_USERS, PM_IMDB, SINGLE_BUTTON, PROTECT_CONTENT, NOR_IMG, SPELL_CHECK_REPLY, IMDB_TEMPLATE, IMDB_DELET_TIME, PMFILTER, G_FILTER, SHORT_URL, SHORT_API, REQ_CHANNEL
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums 
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
@@ -191,10 +191,12 @@ async def pm_AutoFilter(client, msg, pmspoll=False):
             await hmm.delete()            
         except Exception as e:
             logger.exception(e)
+            fuk = await message.reply_photo(photo=NOR_IMG, caption=cap, reply_markup=InlineKeyboardMarkup(btn))
             cdp = await message.reply_text(cap, quote=True, reply_markup=InlineKeyboardMarkup(btn))
             await asyncio.sleep(IMDB_DELET_TIME)
             await cdp.delete()
     else:
+        fuk = await message.reply_photo(photo=NOR_IMG, caption=cap, reply_markup=InlineKeyboardMarkup(btn))
         abc = await message.reply_text(cap, quote=True, reply_markup=InlineKeyboardMarkup(btn))
         await asyncio.sleep(IMDB_DELET_TIME)
         await abc.delete()        
