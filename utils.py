@@ -63,19 +63,6 @@ async def is_subscribed(bot, query):
             return True
         else:
             return False
-
-async def check_loop_sub(client, message, set="andi"):
-    count = 0
-    while True:
-        if count == 45:
-            return False
-        check = await is_subscribed(client, message)
-        count += 1
-        if check:
-            return True
-        else:
-            pass
-        await asyncio.sleep(1)
         
 async def get_poster(query, bulk=False, id=False, file=None):
     imdb = Cinemagoer() 
