@@ -50,7 +50,7 @@ async def start(client, message):
         await message.reply_photo(photo=random.choice(PICS), caption=START_MESSAGE.format(user=message.from_user.mention, bot=client.mention), reply_markup=InlineKeyboardMarkup(buttons), parse_mode=enums.ParseMode.HTML)
         return await m.delete()
         
-    if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help"]:
+    if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help", "start", "hehe"]:
         if message.command[1] == "subscribe":
             await ForceSub(client, message)
             return
@@ -73,7 +73,7 @@ async def start(client, message):
     status = await ForceSub(client, message, file_id=file_id, mode=pre)
     if not status:
         return
-    
+        
     data = message.command[1]
     if not file_id:
         file_id = data
