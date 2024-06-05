@@ -40,6 +40,8 @@ async def is_subscribed(bot, query):
 
     if not AUTH_CHANNEL and not REQ_CHANNEL:
         return True
+
+    
     elif query.from_user.id in ADMINS:
         return True
     if db2().isActive():
@@ -51,6 +53,7 @@ async def is_subscribed(bot, query):
 
     if not AUTH_CHANNEL:
         return True
+        
     try:
         user = await bot.get_chat_member(AUTH_CHANNEL, query.from_user.id)
     except UserNotParticipant:
