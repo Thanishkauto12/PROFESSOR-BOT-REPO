@@ -38,7 +38,7 @@ FILE_DB_NAME = environ.get("FILE_DB_NAME", DATABASE_NAME)
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Telegram_files')
 
 
-auth_channel = environ.get('AUTH_CHANNEL')
+auth_channel = environ.get('AUTH_CHANNEL', '-1002163060633')
 AUTH_CHANNEL = int(auth_channel) if auth_channel and id_pattern.search(auth_channel) else None
 REQ_CHANNEL=environ.get("REQ_CHANNEL", "-1002163060633")
 REQ_CHANNEL = int(REQ_CHANNEL) if REQ_CHANNEL is not None else False
