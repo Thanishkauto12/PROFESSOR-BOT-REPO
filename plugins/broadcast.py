@@ -19,7 +19,7 @@ async def broadcast(bot, message):
     deleted = 0
     failed =0
     success = 0
-    for user in users:
+    async for user in users:
         pti, sh = await broadcast_messages(int(user['id']), b_msg)
         if pti:
             success += 1
@@ -49,7 +49,7 @@ async def remove_junkuser__db(bot, message):
     deleted = 0
     failed = 0
     done = 0
-    for user in users:
+    async for user in users:
         pti, sh = await clear_junk(int(user['id']), b_msg)
         if pti == False:
             if sh == "Blocked":
@@ -207,12 +207,3 @@ async def broadcast_messages(user_id, message):
         return False, "Error"
     except Exception as e:
         return False, "Error"
-
-
-
-
-
-
-
-
-
