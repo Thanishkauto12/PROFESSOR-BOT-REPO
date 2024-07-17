@@ -19,6 +19,8 @@ from database.gfilters_mdb import find_gfilter, get_gfilters
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
+languages = [language.lower() for language in ('hindi english telugu tamil kannada malayalam marathi punjabi').split()]
+MAX_BTN = 10
 
 FILTER_MODE = {}
 G_MODE = {}
@@ -165,6 +167,151 @@ async def advantage_spoll_choker(bot, query):
             await asyncio.sleep(10)
             await k.delete()
 
+@Client.on_callback_query(filters.regex(r"^languages"))
+async def languages_(client: Client, query: ):
+    _, key, req, offset = query.data.split("#")
+    if int(req) != query.from_user.id:
+        return await query.answer(f"Hello {query.from_user.first_name},\nDon't Click Other Results!", show_alert=True)
+    btn = [[
+        InlineKeyboardButton(text=languages[i].title(), callback_data=f"lang_search#{languages[i]}#{key}#{offset}#{req}"),
+        InlineKeyboardButton(text=languages[i+1].title(), callback_data=f"lang_search#{languages[i+1]}#{key}#{offset}#{req}")
+    ]
+        for i in range(0, len(languages)-1, 2)
+    ]
+    btn.append([InlineKeyboardButton(text="⪻ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{offset}")])  
+    await query.message.edit_text(
+        "<b>Sᴇʟᴇᴄᴛ Yᴏᴜʀ Dᴇsɪʀᴇᴅ Lᴀɴɢᴜᴀɢᴇ 👇</b>",
+        disable_web_page_preview=True,
+        reply_markup=InlineKeyboardMarkup(btn)
+    )
+
+@Client.on_callback_query(filters.regex(r"^lang_search"))
+async def filter_languages_cb_handler(client: Client, query: ):
+    _, lang, key, offset, req = query.data.split("#")
+    if int(req) != query.from_user.id:
+        return await query.answer(f"Hello {query.from_user.first_name},\nDon't Click Other Results!", show_alert=True)
+
+    search = temp.GP_BUTTONS.get(key)
+
+    files, l_offset, total_results = await get_search_results(search, lang=lang)
+    if not files:
+        await query.answer(f"sᴏʀʀʏ '{lang.title()}' ʟᴀɴɢᴜᴀɢᴇ ꜰɪʟᴇs ɴᴏᴛ ꜰᴏᴜɴᴅ 😕", show_alert=1)
+        return
+    temp.GP_BUTTONS[key] = search
+    settings = await get_settings(query.message.chat.id)
+
+    if SHORT_URL and SHORT_API:          
+        if settings["button"]:
+            btn = [[InlineKeyboardButton(text=f"[{get_size(file.file_size)}] {file.file_name}", url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}"))] for file in files ]
+        else:
+            btn = [[InlineKeyboardButton(text=f"{file.file_name}", url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}")),
+                    InlineKeyboardButton(text=f"{get_size(file.file_size)}", url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}"))] for file in files ]
+    else:        
+        if settings["button"]:
+            btn = [[InlineKeyboardButton(text=f"🍿 [{get_size(file.file_size)}] 📂{file.file_name}", callback_data=f'files#{nxreq}#{file.file_id}')] for file in files ]
+        else:
+            btn = [[InlineKeyboardButton(text=f"{file.file_name}", callback_data=f'files#{nxreq}#{file.file_id}'),
+                    InlineKeyboardButton(text=f"{get_size(file.file_size)}", callback_data=f'files#{nxreq}#{file.file_id}')] for file in files ]
+
+    btn.insert(0, [
+        InlineKeyboardButton(f"🔺 ɪɴꜰᴏ 🔻", callback_data="REQINFO"),
+        InlineKeyboardButton(f"🔺 ᴍᴏᴠɪᴇ 🔻", callback_data="MINFO"),
+        InlineKeyboardButton(f"🔺 ꜱᴇʀɪᴇꜱ 🔻", callback_data="SINFO")
+    ])
+    btn.insert(0, [
+        InlineKeyboardButton(f'🎬 {search} 🎬', 'rkbtn')
+    ])
+    btn.insert(1, [
+        InlineKeyboardButton("📽️ 𝐎𝐓𝐓 𝐌𝐎𝐕𝐈𝐄𝐒 📽️", url=f"https://t.me/+DFXw1-2my71hNTc1"),
+        InlineKeyboardButton("🖥️ 𝐎𝐓𝐓 𝐔𝐏𝐃𝐀𝐓𝐄𝐒 🖥️", url=f"https://t.me/+1Zm5sYJIUpwyZWFl")
+    ])
+    if l_offset != "":
+        btn.append(
+            [InlineKeyboardButton(f"❄️ 1 / {math.ceil(total_results / 10)}", callback_data="pages"),
+             InlineKeyboardButton("ɴᴇxᴛ ➡️", callback_data=f"lang_next#{req}#{key}#{lang}#{l_offset}#{offset}")]
+        )
+    btn.append([InlineKeyboardButton(text="⪻ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{offset}")])
+    try:
+        await query.message.edit_text(f"Hᴇʀᴇ ɪs Wʜᴀᴛ I Fᴏᴜɴᴅ Iɴ Mʏ Dᴀᴛᴀʙᴀsᴇ Fᴏʀ Yᴏᴜʀ Qᴜᴇʀʏ {search}.", reply_markup=InlineKeyboardMarkup(btn))
+    except MessageNotModified:
+        pass
+    await query.answer()
+
+@Client.on_callback_query(filters.regex(r"^lang_next"))
+async def lang_next_page(bot, query):
+    ident, req, key, lang, l_offset, offset = query.data.split("#")
+    if int(req) != query.from_user.id:
+        return await query.answer(f"Hello {query.from_user.first_name},\nDon't Click Other Results!", show_alert=True)
+    try:
+        l_offset = int(l_offset)
+    except:
+        l_offset = 0
+    search = temp.GP_BUTTONS.get(key)
+    if not search:
+        await query.answer(f"Hello {query.from_user.first_name},\nSend New Request Again!", show_alert=True)
+        return
+
+    files, n_offset, total = await get_search_results(search, offset=l_offset, lang=lang)
+    if not files:
+        return
+    temp.GP_BUTTONS[key] = search
+
+    try:
+        n_offset = int(n_offset)
+    except:
+        n_offset = 0
+
+    if SHORT_URL and SHORT_API:          
+        if settings["button"]:
+            btn = [[InlineKeyboardButton(text=f"[{get_size(file.file_size)}] {file.file_name}", url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}"))] for file in files ]
+        else:
+            btn = [[InlineKeyboardButton(text=f"{file.file_name}", url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}")),
+                    InlineKeyboardButton(text=f"{get_size(file.file_size)}", url=await get_shortlink(f"https://telegram.dog/{temp.U_NAME}?start=files_{file.file_id}"))] for file in files ]
+    else:        
+        if settings["button"]:
+            btn = [[InlineKeyboardButton(text=f"🍿 [{get_size(file.file_size)}] 📂{file.file_name}", callback_data=f'files#{nxreq}#{file.file_id}')] for file in files ]
+        else:
+            btn = [[InlineKeyboardButton(text=f"{file.file_name}", callback_data=f'files#{nxreq}#{file.file_id}'),
+                    InlineKeyboardButton(text=f"{get_size(file.file_size)}", callback_data=f'files#{nxreq}#{file.file_id}')] for file in files ]
+
+    btn.insert(0, [
+        InlineKeyboardButton(f"🔺 ɪɴꜰᴏ 🔻", callback_data="REQINFO"),
+        InlineKeyboardButton(f"🔺 ᴍᴏᴠɪᴇ 🔻", callback_data="MINFO"),
+        InlineKeyboardButton(f"🔺 ꜱᴇʀɪᴇꜱ 🔻", callback_data="SINFO")
+    ])
+    btn.insert(0, [
+        InlineKeyboardButton(f'🎬 {search} 🎬', 'rkbtn')
+    ])
+    btn.insert(1, [
+        InlineKeyboardButton("📽️ 𝐎𝐓𝐓 𝐌𝐎𝐕𝐈𝐄𝐒 📽️", url=f"https://t.me/+DFXw1-2my71hNTc1"),
+        InlineKeyboardButton("🖥️ 𝐎𝐓𝐓 𝐔𝐏𝐃𝐀𝐓𝐄𝐒 🖥️", url=f"https://t.me/+1Zm5sYJIUpwyZWFl")
+    ])
+
+    if 0 < l_offset <= 10:
+        b_offset = 0
+    elif l_offset == 0:
+        b_offset = None
+    else:
+        b_offset = l_offset - 10
+
+    if n_offset == 0:
+        btn.append(
+            [InlineKeyboardButton("« ʙᴀᴄᴋ", callback_data=f"lang_next#{req}#{key}#{lang}#{b_offset}#{offset}"),
+             InlineKeyboardButton(f"{math.ceil(int(l_offset) / MAX_BTN) + 1}/{math.ceil(total / MAX_BTN)}", callback_data="buttons")]
+        )
+    elif b_offset is None:
+        btn.append(
+            [InlineKeyboardButton(f"{math.ceil(int(l_offset) / MAX_BTN) + 1}/{math.ceil(total / MAX_BTN)}", callback_data="buttons"),
+             InlineKeyboardButton("ɴᴇxᴛ »", callback_data=f"lang_next#{req}#{key}#{lang}#{n_offset}#{offset}")]
+        )
+    else:
+        btn.append(
+            [InlineKeyboardButton("« ʙᴀᴄᴋ", callback_data=f"lang_next#{req}#{key}#{lang}#{b_offset}#{offset}"),
+             InlineKeyboardButton(f"{math.ceil(int(l_offset) / MAX_BTN) + 1}/{math.ceil(total / MAX_BTN)}", callback_data="buttons"),
+             InlineKeyboardButton("ɴᴇxᴛ »", callback_data=f"lang_next#{req}#{key}#{lang}#{n_offset}#{offset}")]
+        )
+    btn.append([InlineKeyboardButton(text="⪻ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{offset}")])
+    await query.message.edit_text(f"Hᴇʀᴇ ɪs Wʜᴀᴛ I Fᴏᴜɴᴅ Iɴ Mʏ Dᴀᴛᴀʙᴀsᴇ Fᴏʀ Yᴏᴜʀ Qᴜᴇʀʏ {search} .", reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=True)
 
 @Client.on_message(filters.group & filters.text & filters.incoming & filters.chat(AUTH_GROUPS) if AUTH_GROUPS else filters.text & filters.incoming & filters.group)
 async def give_filter(client, message):
@@ -212,6 +359,7 @@ async def auto_filter(client, msg, spoll=False):
         search, files, offset, total_results = spoll
     pre = 'filep' if settings['file_secure'] else 'file'
     req = message.from_user.id if message.from_user else 0
+    key = f"{message.chat.id}-{message.id}"
 
     if SHORT_URL and SHORT_API:          
         if settings["button"]:
@@ -234,11 +382,10 @@ async def auto_filter(client, msg, spoll=False):
         InlineKeyboardButton(f'🎬 {search} 🎬', 'rkbtn')
     ])
     btn.insert(1, [
-        InlineKeyboardButton("📽️ 𝐎𝐓𝐓 𝐌𝐎𝐕𝐈𝐄𝐒 📽️", url=f"https://t.me/+DFXw1-2my71hNTc1"),
-        InlineKeyboardButton("🖥️ 𝐎𝐓𝐓 𝐔𝐏𝐃𝐀𝐓𝐄𝐒 🖥️", url=f"https://t.me/+1Zm5sYJIUpwyZWFl")
+        InlineKeyboardButton("📰 ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}#{req}#{offset}"),
+        InlineKeyboardButton("🔍 ǫᴜᴀʟɪᴛʏ", callback_data=f"quality#{key}#{req}#{offset}")
     ])  
     if offset != "":
-        key = f"{message.chat.id}-{message.id}"
         temp.GP_BUTTONS[key] = search
         req = message.from_user.id if message.from_user else 0
         btn.append(
