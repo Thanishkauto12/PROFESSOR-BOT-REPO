@@ -58,7 +58,7 @@ async def save_file(media):
 
 
 
-async def get_search_results(query, file_type=None, max_results=(MAX_RIST_BTNS), offset=0, filter=False):
+async def get_search_results(query, file_type=None, max_results=(MAX_RIST_BTNS), offset=0, filter=False, lang=None):
     query = query.strip()
     if not query: raw_pattern = '.'
     elif ' ' not in query: raw_pattern = r'(\b|[\.\+\-_])' + query + r'(\b|[\.\+\-_])'
@@ -75,6 +75,17 @@ async def get_search_results(query, file_type=None, max_results=(MAX_RIST_BTNS),
     cursor = Media.find(filter)
     # Sort by recent
     cursor.sort('$natural', -1)
+
+    #language
+    if lang:
+        lang_files = [file async for file in cursor if lang in file.file_name.lower()]
+        files = lang_files[offset:][:max_results]
+        total_results = len(lang_files)
+        next_offset = offset + max_results
+        if next_offset >= total_results:
+            next_offset = ''
+        return files, next_offset, total_results
+        
     # Slice files according to offset and max results
     cursor.skip(offset).limit(max_results)
     # Get list of files
