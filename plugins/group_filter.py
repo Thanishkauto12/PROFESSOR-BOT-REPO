@@ -191,6 +191,7 @@ async def filter_languages_cb_handler(client, query):
     if int(req) != query.from_user.id:
         return await query.answer(f"Hello {query.from_user.first_name},\nDon't Click Other Results!", show_alert=True)
 
+    settings = await get_settings(query.chat.id)
     search = temp.GP_BUTTONS.get(key)
     if not search:
         return await query.answer("Request Again!", show_alert=True)
