@@ -185,8 +185,8 @@ async def languages_(client: Client, query: CallbackQuery):
         reply_markup=InlineKeyboardMarkup(btn)
     )
 
-@Client.on_callback_query(filters.regex(r"^lang_search"))
-async def filter_languages_cb_handler(client: Client, query: CallbackQuery):
+@Client.on_callback_query(filters.regex(r'^lang_search'))
+async def filter_languages_cb_handler(client, query):
     _, lang, key, offset, req = query.data.split("#")
     if int(req) != query.from_user.id:
         return await query.answer(f"Hello {query.from_user.first_name},\nDon't Click Other Results!", show_alert=True)
