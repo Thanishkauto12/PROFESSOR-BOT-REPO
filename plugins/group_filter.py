@@ -193,9 +193,13 @@ async def filter_languages_cb_handler(client: Client, query: CallbackQuery):
 
     search = temp.GP_BUTTONS.get(key)
 
-    files, l_offset, total_results = await get_search_results(search, lang=lang)
+    try:
+        files, l_offset, total_results = await get_search_results(search, lang=lang)
+    except Exception as e:
+        await query.answer(f"Something Went Wrong,\n\n{e}")
+        return
     if not files:
-        await query.answer(f"sᴏʀʀʏ '{lang.title()}' ʟᴀɴɢᴜᴀɢᴇ ꜰɪʟᴇs ɴᴏᴛ ꜰᴏᴜɴᴅ 😕", show_alert=1)
+        await query.answer(f"sᴏʀʀʏ '{lang.title()}' ʟᴀɴɢᴜᴀɢᴇ ꜰɪʟᴇs ɴᴏᴛ ꜰᴏᴜɴᴅ 😕", show_alert=True)
         return
     temp.GP_BUTTONS[key] = search
     settings = await get_settings(query.message.chat.id)
