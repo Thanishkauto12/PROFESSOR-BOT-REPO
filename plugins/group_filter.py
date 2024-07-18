@@ -192,11 +192,13 @@ async def filter_languages_cb_handler(client, query):
         return await query.answer(f"Hello {query.from_user.first_name},\nDon't Click Other Results!", show_alert=True)
 
     search = temp.GP_BUTTONS.get(key)
+    if not search:
+        return await query.answer("Request Again!", show_alert=True)
 
     try:
         files, l_offset, total_results = await get_search_results(search, lang=lang)
     except Exception as e:
-        await query.answer(f"Something Went Wrong,\n\n{e}")
+        await query.answer(f"Something Went Wrong,\n\n{e}", show_alert=True)
         return
     if not files:
         await query.answer(f"sᴏʀʀʏ '{lang.title()}' ʟᴀɴɢᴜᴀɢᴇ ꜰɪʟᴇs ɴᴏᴛ ꜰᴏᴜɴᴅ 😕", show_alert=True)
