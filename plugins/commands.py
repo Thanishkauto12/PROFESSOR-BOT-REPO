@@ -34,7 +34,7 @@ async def start(client, message):
         await client.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention, message.from_user.username, temp.U_NAME))
     if len(message.command) != 2:
         buttons = [[
-            InlineKeyboardButton("🔥 Main Channel 🔥", url="https://t.me/+FqX6aNof9RA0OGZl")
+            InlineKeyboardButton("🔥 Main Channel 🔥", url="https://t.me/+hgi69S28jyMzNzg1")
             ],[
             InlineKeyboardButton("Sᴇᴀʀᴄʜ 🔎", switch_inline_query_current_chat=''), 
             InlineKeyboardButton("Cʜᴀɴɴᴇʟ 🔈", url="https://t.me/Adholokam_Cinema_Channel")
@@ -52,7 +52,7 @@ async def start(client, message):
             await ForceSub(client, message)
             return
         buttons = [[
-            InlineKeyboardButton("🔥 Main Channel 🔥", url="https://t.me/+FqX6aNof9RA0OGZl")
+            InlineKeyboardButton("🔥 Main Channel 🔥", url="https://t.me/+hgi69S28jyMzNzg1")
             ],[
             InlineKeyboardButton("Sᴇᴀʀᴄʜ 🔎", switch_inline_query_current_chat=''), 
             InlineKeyboardButton("Cʜᴀɴɴᴇʟ 🔈", url="https://t.me/Adholokam_Cinema_Channel")
